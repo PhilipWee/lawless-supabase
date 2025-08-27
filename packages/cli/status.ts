@@ -18,12 +18,6 @@ const KV_RE = /^([A-Za-z0-9 _-]+):\s*(.+)$/; // matches "Key: Value" (keeps spac
 
 const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim(); // compact spaces, lowercased keys
 
-const parseServices = (line: string) =>
-  (line.match(/\[(.*?)\]/)?.[1] ?? "")
-    .split(" ")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
 type KVMap = Record<string, string>;
 
 function parseLinesToKVMap(output: string) {
