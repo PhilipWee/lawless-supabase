@@ -4,9 +4,15 @@
   "description": "Unstable helpers for supabase",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "pnpm --filter @lawless-supabase/cli dev",
+    "cli:build": "pnpm --filter @lawless-supabase/cli build",
+    "build": "pnpm -r build"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
 }
