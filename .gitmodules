@@ -1,0 +1,3 @@
+[submodule "packages/postgres-meta"]
+	path = packages/postgres-meta
+	url = https://github.com/PhilipWee/postgres-meta.git
