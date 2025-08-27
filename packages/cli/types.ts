@@ -63,9 +63,37 @@ export async function generateZodTypes(
       cwd: postgresMetaPath,
       env,
       encoding: "utf8",
-      stdio: ["pipe", "pipe", "pipe"],
+      stdio: ["ignore", "pipe", "inherit"],
       shell: "/bin/bash", // Explicitly use bash shell
     });
+
+    // If outputFile is specified, write the result to the file
+    if (options.outputFile) {
+      const outputPath = join(process.cwd(), options.outputFile);
+      const outputDir = dirname(outputPath);
+
+      // Create output directory if it doesn't exist
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+
+      // Override if file exists
+      // Find the start of the generated types using the flag comment
+      const startMarker = "/* START GENERATED TYPES */";
+      const startIndex = result.indexOf(startMarker);
+      if (startIndex === -1) {
+        throw new Error(
+          `Cannot find start marker "${startMarker}" in generated output`
+        );
+      }
+
+      const cleanedResult = result.substring(startIndex);
+
+      // Use the cleaned result for file output
+      const finalOutput = cleanedResult;
+      fs.writeFileSync(outputPath, finalOutput, "utf8");
+      console.log(`Types written to: ${outputPath}`);
+    }
 
     return result;
   } catch (error: any) {
@@ -78,10 +106,6 @@ export async function generateZodTypes(
       console.log("stderr:", error.stderr);
     }
 
-    if (error.stdout) {
-      // If there's stdout, it might contain the generated types
-      return error.stdout;
-    }
     throw new Error(`Failed to generate types: ${error.message}`);
   }
 }

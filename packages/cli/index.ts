@@ -34,7 +34,7 @@ program
   });
 
 program
-  .command("zodtypes")
+  .command("zodtypes <outputFile>")
   .description("Generate Zod types from local Supabase database")
   .option(
     "-i, --include-schemas <schemas>",
@@ -44,9 +44,10 @@ program
     "-e, --exclude-schemas <schemas>",
     "Comma-separated list of schemas to exclude"
   )
-  .action(async (options) => {
+  .action(async (outputFile, options) => {
     try {
       const types = await generateZodTypes({
+        outputFile,
         includedSchemas: options.includeSchemas
           ?.split(",")
           .map((s: string) => s.trim()),
@@ -54,8 +55,6 @@ program
           ?.split(",")
           .map((s: string) => s.trim()),
       });
-
-      process.stdout.write(types);
     } catch (error) {
       console.error("❌ Failed to generate types:", error);
       process.exit(1);
