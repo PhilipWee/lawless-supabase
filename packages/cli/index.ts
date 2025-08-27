@@ -2,7 +2,7 @@
 
 import { Command } from "commander";
 import { getSupabaseStatus } from "./status";
-import { generateZodTypes, writeTypesToFile } from "./types";
+import { generateZodTypes } from "./types";
 
 const program = new Command();
 
@@ -34,28 +34,28 @@ program
   });
 
 program
-  .command("types")
+  .command("zodtypes")
   .description("Generate Zod types from local Supabase database")
-  .option("-o, --output <file>", "Output file path (default: ./generated-types.ts)")
-  .option("-i, --include-schemas <schemas>", "Comma-separated list of schemas to include")
-  .option("-e, --exclude-schemas <schemas>", "Comma-separated list of schemas to exclude")
+  .option(
+    "-i, --include-schemas <schemas>",
+    "Comma-separated list of schemas to include"
+  )
+  .option(
+    "-e, --exclude-schemas <schemas>",
+    "Comma-separated list of schemas to exclude"
+  )
   .action(async (options) => {
     try {
-      console.log("Getting Supabase status...");
-      const status = getSupabaseStatus();
-      console.log(`Database URL: ${status.urls.db}`);
-
-      console.log("Generating Zod types...");
       const types = await generateZodTypes({
-        outputFile: options.output || "./generated-types.ts",
-        includedSchemas: options.includeSchemas?.split(",").map((s: string) => s.trim()),
-        excludedSchemas: options.excludeSchemas?.split(",").map((s: string) => s.trim()),
+        includedSchemas: options.includeSchemas
+          ?.split(",")
+          .map((s: string) => s.trim()),
+        excludedSchemas: options.excludeSchemas
+          ?.split(",")
+          .map((s: string) => s.trim()),
       });
 
-      const outputFile = options.output || "./generated-types.ts";
-      writeTypesToFile(types, outputFile);
-      
-      console.log("✅ Zod types generated successfully!");
+      process.stdout.write(types);
     } catch (error) {
       console.error("❌ Failed to generate types:", error);
       process.exit(1);

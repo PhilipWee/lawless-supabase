@@ -40,7 +40,7 @@ export async function generateZodTypes(
     const __dirname = dirname(__filename);
 
     // Get the absolute path to the postgres-meta package
-    const postgresMetaPath = join(__dirname, "..", "postgres-meta");
+    const postgresMetaPath = join(__dirname, "../..", "postgres-meta");
     console.log(`Postgres-meta path: ${postgresMetaPath}`);
 
     // Check if the postgres-meta directory exists
@@ -84,19 +84,4 @@ export async function generateZodTypes(
     }
     throw new Error(`Failed to generate types: ${error.message}`);
   }
-}
-
-export function writeTypesToFile(types: string, outputFile: string): void {
-  const fs = require("fs");
-  const path = require("path");
-
-  // Ensure the directory exists
-  const dir = path.dirname(outputFile);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  // Write the types to file
-  fs.writeFileSync(outputFile, types, "utf8");
-  console.log(`Types written to: ${outputFile}`);
 }
