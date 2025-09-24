@@ -60,7 +60,7 @@ export function parseSupabaseStatus(output: string): SupabaseStatus {
       storage: getOrThrow(kv, ["S3 Storage URL", "Storage URL"]),
       db: getOrThrow(kv, ["DB URL", "Database URL"]),
       studio: getOrThrow(kv, ["Studio URL"]),
-      inbucket: getOrThrow(kv, ["Inbucket URL", "InBucket URL"]),
+      inbucket: getOrThrow(kv, ["Inbucket URL", "InBucket URL", "Mailpit URL"]),
     },
     keys: {
       jwt: getOrThrow(kv, ["JWT secret", "JWT Secret"]),
