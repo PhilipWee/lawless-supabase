@@ -64,7 +64,7 @@ export async function generateZodTypes(
       env,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "inherit"],
-      shell: "/bin/bash", // Explicitly use bash shell
+      // shell: "/bin/bash", // Explicitly use bash shell
     });
 
     // If outputFile is specified, write the result to the file

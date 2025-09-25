@@ -9,7 +9,7 @@ export interface SupabaseStatus {
     studio: string;
     inbucket: string;
   };
-  keys: { jwt: string; anon: string; service_role: string };
+  keys: { anon: string; service_role: string };
   storage: { access_key: string; secret_key: string; region: string };
 }
 
@@ -63,9 +63,13 @@ export function parseSupabaseStatus(output: string): SupabaseStatus {
       inbucket: getOrThrow(kv, ["Inbucket URL", "InBucket URL", "Mailpit URL"]),
     },
     keys: {
-      jwt: getOrThrow(kv, ["JWT secret", "JWT Secret"]),
-      anon: getOrThrow(kv, ["anon key", "Anon key"]),
-      service_role: getOrThrow(kv, ["service_role key", "Service role key"]),
+      // jwt: getOrThrow(kv, ["JWT secret", "JWT Secret"]),
+      anon: getOrThrow(kv, ["anon key", "Anon key", "Publishable Key"]),
+      service_role: getOrThrow(kv, [
+        "service_role key",
+        "Service role key",
+        "Secret Key",
+      ]),
     },
     storage: {
       access_key: getOrThrow(kv, ["S3 Access Key", "Access Key"]),
