@@ -13,68 +13,31 @@ export interface SupabaseStatus {
   storage: { access_key: string; secret_key: string; region: string };
 }
 
-const ANSI = /\x1B\[[0-9;]*m/g;
-const KV_RE = /^([A-Za-z0-9 _-]+):\s*(.+)$/; // matches "Key: Value" (keeps spaces in key)
-
-const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim(); // compact spaces, lowercased keys
-
-type KVMap = Record<string, string>;
-
-function parseLinesToKVMap(output: string) {
-  const map: KVMap = {};
-  const lines = (output ?? "").replace(ANSI, "").split(/\r?\n/);
-
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line) continue;
-
-    const m = line.match(KV_RE);
-    if (m) {
-      const key = normalize(m[1]);
-      map[key] = m[2].trim();
-    }
-  }
-  return map;
-}
-
-function getOrThrow(map: KVMap, aliases: string[]) {
-  for (const a of aliases) {
-    const k = normalize(a);
-    if (map[k]) return map[k];
-  }
-  throw new Error(`Missing required field: ${aliases[0]}`);
-}
-
 export function getSupabaseStatus(): SupabaseStatus {
-  const out = execSync("npx supabase status", { encoding: "utf8" });
+  const out = execSync("npx supabase status -o json", { encoding: "utf8" });
   return parseSupabaseStatus(out);
 }
 
 export function parseSupabaseStatus(output: string): SupabaseStatus {
-  const kv = parseLinesToKVMap(output);
+  const json = JSON.parse(output);
 
   return {
     urls: {
-      api: getOrThrow(kv, ["API URL"]),
-      graphql: getOrThrow(kv, ["GraphQL URL", "Graphql URL"]),
-      storage: getOrThrow(kv, ["S3 Storage URL", "Storage URL"]),
-      db: getOrThrow(kv, ["DB URL", "Database URL"]),
-      studio: getOrThrow(kv, ["Studio URL"]),
-      inbucket: getOrThrow(kv, ["Inbucket URL", "InBucket URL", "Mailpit URL"]),
+      api: json.API_URL,
+      graphql: json.GRAPHQL_URL,
+      storage: json.STORAGE_S3_URL,
+      db: json.DB_URL,
+      studio: json.STUDIO_URL,
+      inbucket: json.INBUCKET_URL || json.MAILPIT_URL,
     },
     keys: {
-      // jwt: getOrThrow(kv, ["JWT secret", "JWT Secret"]),
-      anon: getOrThrow(kv, ["anon key", "Anon key", "Publishable Key"]),
-      service_role: getOrThrow(kv, [
-        "service_role key",
-        "Service role key",
-        "Secret Key",
-      ]),
+      anon: json.ANON_KEY || json.PUBLISHABLE_KEY,
+      service_role: json.SERVICE_ROLE_KEY || json.SECRET_KEY,
     },
     storage: {
-      access_key: getOrThrow(kv, ["S3 Access Key", "Access Key"]),
-      secret_key: getOrThrow(kv, ["S3 Secret Key", "Secret Key"]),
-      region: getOrThrow(kv, ["S3 Region", "Region"]),
+      access_key: json.S3_PROTOCOL_ACCESS_KEY_ID,
+      secret_key: json.S3_PROTOCOL_ACCESS_KEY_SECRET,
+      region: json.S3_PROTOCOL_REGION,
     },
   };
 }
