@@ -56,7 +56,7 @@ export async function generateZodTypes(
       throw new Error(`Package.json not found at: ${packageJsonPath}`);
     }
 
-    console.log("Running postgres-meta type generation...");
+    console.log("Running postgres-meta type generation...", postgresMetaPath);
 
     // Run the postgres-meta type generation using the existing script
     const result = execSync("npm run gen:types:zod", {
