@@ -114,3 +114,5 @@ bin/
 
 # postgres-meta
 openapi.json
+
+**/.DS_Store
